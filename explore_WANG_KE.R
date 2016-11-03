@@ -168,7 +168,7 @@ cata_binary_plot <-function(data, plot_switch){
 
 ################## Main Function ###################
 
-explore <- function(dataframe, plot_switch, thres, binVec){
+explore <- function(dataframe, plot_switch, threshold, binVec){
   
   Freq_table <- frequency_table(dataframe)
   Numeric_Summary <- printSummary(dataframe)
