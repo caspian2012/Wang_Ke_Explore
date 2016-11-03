@@ -166,6 +166,7 @@ cata_binary_plot <-function(data, plot_switch){
 }
 
 
+
 ################## Main Function ###################
 
 explore <- function(dataframe, plot_switch, threshold, binVec){
