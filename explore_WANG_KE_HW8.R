@@ -103,13 +103,13 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 # If the plot switch is set to "grid", then the function prints a grid for each count-bin combination and a separate grid for each density-bin size combination.
 # The parameter is a dataframe, a string with values of "off", "on", or "grid", and a vector containing bin sizes.
 numeric_plot <- function(data, plot_switch, binVec) {
-  num <- sapply(data, is.numeric)         #check to see which column is numeric
-  data <- data[,num]                      #extract numeric columns
-  for(name in colnames(data)) {           #loop through the columns in the dataset
+  num <- sapply(data, is.numeric) # Check the numeric columns of the dataframe and assign them to a logical vector num.
+  data <- data[,num] # Acquire the data in numeric columns.
+  for(name in colnames(data)) {  # Loop through the columns in dataset with numeric columns.
     
-    if(plot_switch == "on"){              #Case when switch is "on"
+    if(plot_switch == "on"){  # If the switch is "on"
       grid.newpage()          
-      m <- lapply(data[name], mean)       #find the mean of that currently iterated column
+      m <- lapply(data[name], mean)  # Acquire the mean of that currently iterated column
       plot1 <- ggplot(data, aes_string(name)) + geom_histogram(fill="blue") + geom_vline(xintercept = m[[1]], colour="red") 
       plot2 <- ggplot(data, aes_string(name)) + geom_histogram(aes(y= ..density..), fill="blue") + geom_vline(xintercept = m[[1]], colour="red")
       #multiplot(plot1, plot2, cols = 1)
@@ -118,22 +118,22 @@ numeric_plot <- function(data, plot_switch, binVec) {
       print(plot2, vp = viewport(layout.pos.row = 1, layout.pos.col = 2))
     }
     
-    if(plot_switch == "grid"){          #Case when switch is "grid"
-      count_plots <- list()             #Create a empty list to store the count histogram subplots of each bin size
-      density_plots <- list()           #Create a empty list to store the density histograms subplots of each bin size
-      if(missing(binVec)){              #This takes of the case when the vector is null, prints histogram with default bins 30
+    if(plot_switch == "grid"){  # If the switch is "grid"
+      count_plots <- list() # Create an empty list to store the count histogram subplots of each bin size
+      density_plots <- list() # Create an empty list to store the density histograms subplots of each bin size
+      if(missing(binVec)){ # If the binsize vector is null, prints histogram with default bins of 30
         print(ggplot(data, aes_string(name), color = "blue") + geom_histogram(fill="blue")+ labs(title= "default bins"))
         print(ggplot(data, aes_string(name), color = "blue") + geom_histogram(aes(y= ..density..), fill="blue")+ labs(title= "default bins"))
-      }else{                            #This takes care of the case when the user enters a vector
-        for(i in 1:length(binVec)) {    #loop through each bin size and create a subplot
+      }else{   # If the user enters a binsize vector
+        for(i in 1:length(binVec)) {    # Loop through each bin size and create a subplot
           k <- ggplot(data, aes_string(name), color = "blue") + geom_histogram(fill="blue", bins = binVec[i])+ labs(title= paste(binVec[i], "bins"))
-          count_plots[[i]] <- k           #Push each subplot to a list 
+          count_plots[[i]] <- k  # Push each subplot to a list 
         }
         multiplot(plotlist = count_plots, cols = 2)     
         
-        for(i in 1:length(binVec)) {    #loop through each bin size and create a subplot
+        for(i in 1:length(binVec)) {  # Loop through each bin size and create a subplot
           k <- ggplot(data, aes_string(name), color = "blue") + geom_histogram(aes(y= ..density..), fill="blue", bins = binVec[i])+ labs(title= paste(binVec[i], "bins"))
-          density_plots[[i]] <- k       #Push each subplot to a list
+          density_plots[[i]] <- k  #Push each subplot to a list
         }
         multiplot(plotlist = density_plots, cols = 2)
         
@@ -145,8 +145,8 @@ numeric_plot <- function(data, plot_switch, binVec) {
 # Define a function that checks if a vector is binary
 # The parameter is a vector
 is.binary <- function(vect) {
-  x <- unique(vect)                    #check all the distinct and put those in a vector x
-  length(x) - sum(is.na(x)) == 2L         #check to see if x only contains 2 distinct values
+  x <- unique(vect) # Check all the distinct elements in the vector and assign them to a vector x.
+  length(x) - sum(is.na(x)) == 2L  # Check if x only contains 2 distinct values
 }
 
 
@@ -154,11 +154,11 @@ is.binary <- function(vect) {
 # when the plot switch parameter is "on" or "grid"
 # The parameter is a dataframe and a string with values of "off", "on", or "grid"
 cata_binary_plot <-function(data, plot_switch){
-  cata_binary <- sapply(data, function(x) (is.factor(x) || is.logical(x)) || is.binary(x))    #check categorical and binary	columns
+  cata_binary <- sapply(data, function(x) (is.factor(x) || is.logical(x)) || is.binary(x))  # Check categorical and binary	columns
   cata_binary_data <- data[cata_binary]     #extract those columns
   
-  if(plot_switch == "on" || plot_switch == "grid") {      #check condition
-    for(name in colnames(cata_binary_data)) {             #loop through the sorted dataframe and plot bar graphs for each column
+  if(plot_switch == "on" || plot_switch == "grid") {   # Check the plot switch.
+    for(name in colnames(cata_binary_data)) {  # Loop through the sorted dataframe and plot bar graphs for each column
       j <- ggplot(cata_binary_data, aes_string(name), color = "grey") + geom_bar(fill="grey")
       print(j)
     }
@@ -167,6 +167,15 @@ cata_binary_plot <-function(data, plot_switch){
 
 
 ################## Main Function ###################
+
+# Define a main function that:
+# creates a frequency table for every categorical and logical variable;
+# creates a summary statistics table for each numerical variable;
+# creates a dataframe that contains each pair of column names in the first column and the associated r-square value in the second column;
+# creates a dataframe that contains pairs of column names and the absolute values of their corresponding Pearson correlation coefficient;
+# creates histograms and grids of the numerical columns;
+# plots a gray bar graph for every categorical and binary variable.
+# The parameter is a dataframe, a string with values of "off", "on", or "grid", a value of threshold, and a vector containing bin sizes.
 
 explore <- function(dataframe, plot_switch, threshold, binVec){
   
